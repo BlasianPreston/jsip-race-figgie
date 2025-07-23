@@ -1,4 +1,4 @@
 (executable
  (public_name race-figgie)
  (name main)
- (libraries race_figgie))
+ (libraries race_figgie core))

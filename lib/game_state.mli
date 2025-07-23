@@ -1,14 +1,17 @@
-type racer = Red | Yellow | Blue | Green
+module Racer : sig
+  type t = Red | Yellow | Blue | Green [@@deriving compare, hash, sexp_of]
+end
+
 type position = int (* lap position or index *)
 type velocity = int
-type holding = { racer : racer; quantity : int }
+type holding = { racer : Racer.t; quantity : int }
 type player = { id : string; holdings : holding list; cash : int }
 type order_type = Bid | Ask
 
 module Order : sig
   type t = {
     player_id : string;
-    racer : racer;
+    racer : Racer.t;
     price : int option;
     order_type : order_type;
   }
@@ -17,8 +20,9 @@ end
 module State : sig
   type t = {
     players : player list;
-    orders : Order.t list;
-    race_positions : (racer * position * velocity) list;
+    bids : Order.t list Racer.Map.t;
+    asks : Order.t list Racer.Map.t;
+    race_positions : (Racer.t * position * velocity) list;
     is_game_over : bool;
   }
 end

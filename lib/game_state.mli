@@ -1,5 +1,8 @@
 module Racer : sig
   type t = Red | Yellow | Blue | Green [@@deriving compare, hash, sexp_of]
+
+(** A map keyed by [Racer.t] values. *)
+module Map : Map.S with type key = t
 end
 
 type position = int (* lap position or index *)

@@ -1,5 +1,11 @@
 module Racer = struct
   type t = Red | Yellow | Blue | Green [@@deriving compare, hash, sexp_of]
+
+  module Map = Map.Make (struct
+    type nonrec t = t
+
+    let compare = compare
+  end)
 end
 
 type position = int (* lap position or index *)

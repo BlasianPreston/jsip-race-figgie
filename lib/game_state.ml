@@ -8,10 +8,16 @@ module Racer = struct
   end)
 end
 
-type position = int (* lap position or index *)
+type position = int
 type velocity = int
 type holding = { racer : Racer.t; quantity : int }
-type player = { id : string; holdings : holding list; cash : int }
+
+module Player = struct
+  type t = { id : string; holdings : Racer.t list; cash : int }
+
+  let create name hand = { id = name; holdings = hand; cash = 400 }
+end
+
 type order_type = Bid | Ask
 
 module Order = struct
@@ -32,11 +38,12 @@ type trade = { buyer : string; seller : string; racer : Racer.t; price : int }
 
 module State = struct
   type t = {
-    players : player list;
+    players : Player.t list;
     bids : Order.t list Racer.Map.t;
     asks : Order.t list Racer.Map.t;
     race_positions : (Racer.t * position * velocity) list;
     is_game_over : bool;
+    deck : Racer.t list;
   }
 
   let empty =
@@ -46,10 +53,58 @@ module State = struct
       asks = Racer.Map.empty;
       race_positions = [];
       is_game_over = false;
+      deck =
+        List.init 10 (fun _ -> Racer.Red)
+        @ List.init 10 (fun _ -> Racer.Blue)
+        @ List.init 10 (fun _ -> Racer.Green)
+        @ List.init 10 (fun _ -> Racer.Yellow);
+    }
+
+  let rec shuffle = function
+    | [] -> []
+    | [ single ] -> [ single ]
+    | list ->
+        let before, after = List.partition (fun _ -> Random.bool ()) list in
+        List.rev_append (shuffle before) (shuffle after)
+
+  let distribute lst n =
+    let chunk_size = List.length lst / n in
+    let rec split acc current lst count =
+      match (lst, count) with
+      | [], _ -> List.rev (List.rev current :: acc)
+      | x :: xs, 1 -> split (List.rev (x :: current) :: acc) [] xs chunk_size
+      | x :: xs, _ -> split acc (x :: current) xs (count - 1)
+    in
+    split [] [] lst chunk_size
+
+  let add_hands_to_players t =
+    let players = t.players in
+    let deck = t.deck in
+    let shuffled_deck = shuffle deck in
+    let groups = distribute shuffled_deck 4 in
+    let players_with_cards =
+      List.map2
+        (fun (player : Player.t) cards -> { player with holdings = cards })
+        players groups
+    in
+    {
+      players = players_with_cards;
+      bids = t.bids;
+      asks = t.asks;
+      race_positions = t.race_positions;
+      is_game_over = false;
+      deck = [];
     }
 
   let create ~players ~bids ~asks ~race_positions ~is_game_over =
-    { players; bids; asks; race_positions; is_game_over }
+    let deck =
+      List.init 10 (fun _ -> Racer.Red)
+      @ List.init 10 (fun _ -> Racer.Blue)
+      @ List.init 10 (fun _ -> Racer.Green)
+      @ List.init 10 (fun _ -> Racer.Yellow)
+    in
+    let state = { players; bids; asks; race_positions; is_game_over; deck } in
+    add_hands_to_players state
 
   let update_positions t =
     let positions = t.race_positions in
@@ -66,6 +121,7 @@ module State = struct
       asks = t.asks;
       race_positions;
       is_game_over = t.is_game_over;
+      deck = t.deck;
     }
 
   let updated_velocities t =
@@ -87,5 +143,6 @@ module State = struct
       asks = t.asks;
       race_positions;
       is_game_over = t.is_game_over;
+      deck = t.deck;
     }
 end

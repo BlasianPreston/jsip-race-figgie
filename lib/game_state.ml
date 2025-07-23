@@ -40,7 +40,13 @@ module State = struct
   }
 
   let empty =
-    { players = []; bids = Racer.Map.empty; asks = Racer.Map.empty; race_positions = []; is_game_over = false }
+    {
+      players = [];
+      bids = Racer.Map.empty;
+      asks = Racer.Map.empty;
+      race_positions = [];
+      is_game_over = false;
+    }
 
   let create ~players ~bids ~asks ~race_positions ~is_game_over =
     { players; bids; asks; race_positions; is_game_over }

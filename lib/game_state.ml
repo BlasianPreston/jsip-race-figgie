@@ -110,9 +110,7 @@ module State = struct
     in
     let shuffled_deck = shuffle deck in
     let groups = distribute shuffled_deck 4 in
-    print_int (List.length groups);
-    print_string "\n";
-    print_int (List.length players);
+    let groups = List.filter (fun lst -> not ((List.length lst) = 0)) groups in
     let players_with_cards =
       List.map2
         (fun (player : Player.t) cards -> { player with holdings = cards })

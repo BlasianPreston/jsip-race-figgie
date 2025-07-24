@@ -45,30 +45,31 @@ module Player : sig
 end
 
 module State : sig
-  type t =
-    { players : Player.t list
-    ; bids : Order.t list Racer.Map.t
-    ; asks : Order.t list Racer.Map.t
-    ; race_positions : (Racer.t * position * velocity) list
-    ; is_game_over : bool
-    }
+  type t = {
+    players : Player.t list;
+    bids : Order.t list Racer.Map.t;
+    asks : Order.t list Racer.Map.t;
+    race_positions : (Racer.t * position * velocity) list;
+    winner : Racer.t option;
+  }
 
-  val create
-    :  players:Player.t list
-    -> bids:Order.t list Racer.Map.t
-    -> asks:Order.t list Racer.Map.t
-    -> race_positions:(Racer.t * velocity * velocity) list
-    -> is_game_over:bool
-    -> t
+  val create :
+    players:Player.t list ->
+    bids:Order.t list Racer.Map.t ->
+    asks:Order.t list Racer.Map.t ->
+    race_positions:(Racer.t * velocity * velocity) list ->
+    winner:Racer.t option ->
+    t
 
-  val update
-    :  players:Player.t list
-    -> bids:Order.t list Racer.Map.t
-    -> asks:Order.t list Racer.Map.t
-    -> race_positions:(Racer.t * velocity * velocity) list
-    -> is_game_over:bool
-    -> t
+  val update :
+    players:Player.t list ->
+    bids:Order.t list Racer.Map.t ->
+    asks:Order.t list Racer.Map.t ->
+    race_positions:(Racer.t * velocity * velocity) list ->
+    winner:Racer.t option ->
+    t
 
   val update_positions : t -> t
   val update_velocities : t -> t
+  val set_winner : t -> Racer.t option -> t
 end

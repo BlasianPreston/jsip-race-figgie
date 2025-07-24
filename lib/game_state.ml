@@ -30,6 +30,7 @@ module Player = struct
     }
 
   let create name hand = { id = name; holdings = hand; cash = 400 }
+  
 end
 
 type order_type =
@@ -51,20 +52,24 @@ module Order = struct
   let is_no_order t = match t.price with None -> true | Some _ -> false
 end
 
-type trade =
-  { buyer : string
-  ; seller : string
-  ; racer : Racer.t
-  ; price : int
-  }
+type trade = { buyer : string; seller : string; racer : Racer.t; price : int }
 
 module State = struct
-  type t =
-    { players : Player.t list
-    ; bids : Order.t list Racer.Map.t
-    ; asks : Order.t list Racer.Map.t
-    ; race_positions : (Racer.t * position * velocity) list
-    ; is_game_over : bool
+  type t = {
+    players : Player.t list;
+    bids : Order.t list Racer.Map.t;
+    asks : Order.t list Racer.Map.t;
+    race_positions : (Racer.t * position * velocity) list;
+    winner : Racer.t option;
+  }
+
+  let empty =
+    {
+      players = [];
+      bids = Racer.Map.empty;
+      asks = Racer.Map.empty;
+      race_positions = [];
+      winner = None;
     }
 
   let empty =
@@ -72,7 +77,7 @@ module State = struct
     ; bids = Racer.Map.empty
     ; asks = Racer.Map.empty
     ; race_positions = []
-    ; is_game_over = false
+    ; winner = None
     }
   ;;
 
@@ -111,22 +116,24 @@ module State = struct
         players
         groups
     in
-    { players = players_with_cards
-    ; bids = t.bids
-    ; asks = t.asks
-    ; race_positions = t.race_positions
-    ; is_game_over = false
+    {
+      players = players_with_cards;
+      bids = t.bids;
+      asks = t.asks;
+      race_positions = t.race_positions;
+      winner = None;
     }
   ;;
 
-  let create ~players ~bids ~asks ~race_positions ~is_game_over =
-    let state = { players; bids; asks; race_positions; is_game_over } in
+  let create ~players ~bids ~asks ~race_positions ~winner =
+    let state = { players; bids; asks; race_positions; winner } in
     add_hands_to_players state
   ;;
 
-  let update ~players ~bids ~asks ~race_positions ~is_game_over =
-    { players; bids; asks; race_positions; is_game_over }
-  ;;
+  let update ~players ~bids ~asks ~race_positions ~winner =
+    { players; bids; asks; race_positions; winner }
+
+  let set_winner state winner = { state with winner }
 
   let update_positions t =
     let positions = t.race_positions in
@@ -134,14 +141,16 @@ module State = struct
       List.map
         (function
           | racer, (position : position), velocity ->
-            racer, position + velocity, velocity)
+              if position + velocity < 0 then (racer, 0, velocity)
+              else (racer, position + velocity, velocity))
         positions
     in
-    { players = t.players
-    ; bids = t.bids
-    ; asks = t.asks
-    ; race_positions
-    ; is_game_over = t.is_game_over
+    {
+      players = t.players;
+      bids = t.bids;
+      asks = t.asks;
+      race_positions;
+      winner = t.winner;
     }
   ;;
 
@@ -158,11 +167,12 @@ module State = struct
             racer, position, new_velocity)
         positions
     in
-    { players = t.players
-    ; bids = t.bids
-    ; asks = t.asks
-    ; race_positions
-    ; is_game_over = t.is_game_over
+    {
+      players = t.players;
+      bids = t.bids;
+      asks = t.asks;
+      race_positions;
+      winner = t.winner;
     }
   ;;
 end

@@ -118,7 +118,7 @@ module State = struct
       is_game_over = t.is_game_over;
     }
 
-  let updated_velocities t =
+  let update_velocities t =
     let positions = t.race_positions in
     let race_positions =
       List.map

@@ -11,6 +11,14 @@ module Racer = struct
 
       let compare = compare
     end)
+
+  let to_string = function
+  Red -> "Red"
+  | Blue -> "Blue"
+  | Green -> "Green"
+  | Yellow -> "Yellow"
+  
+    let equal x y = if String.equal (to_string x) (to_string y) then true else false
 end
 
 type position = int

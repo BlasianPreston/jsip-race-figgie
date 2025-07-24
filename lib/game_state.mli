@@ -6,10 +6,11 @@ module Racer : sig
     | Green
   [@@deriving equal, compare, hash, sexp_of]
 
-  val equal : t -> t -> bool
 
   (** A map keyed by [Racer.t] values. *)
   module Map : Map.S with type key = t
+
+  val equal : t -> t -> bool
 end
 
 type position = int (* lap position or index *)

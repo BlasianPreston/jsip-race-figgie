@@ -43,7 +43,6 @@ module State = struct
     asks : Order.t list Racer.Map.t;
     race_positions : (Racer.t * position * velocity) list;
     is_game_over : bool;
-    deck : Racer.t list;
   }
 
   let empty =
@@ -53,11 +52,6 @@ module State = struct
       asks = Racer.Map.empty;
       race_positions = [];
       is_game_over = false;
-      deck =
-        List.init 10 (fun _ -> Racer.Red)
-        @ List.init 10 (fun _ -> Racer.Blue)
-        @ List.init 10 (fun _ -> Racer.Green)
-        @ List.init 10 (fun _ -> Racer.Yellow);
     }
 
   let rec shuffle = function
@@ -67,7 +61,7 @@ module State = struct
         let before, after = List.partition (fun _ -> Random.bool ()) list in
         List.rev_append (shuffle before) (shuffle after)
 
-  let distribute lst n =
+  let distribute lst (n : int) =
     let chunk_size = List.length lst / n in
     let rec split acc current lst count =
       match (lst, count) with
@@ -79,7 +73,12 @@ module State = struct
 
   let add_hands_to_players t =
     let players = t.players in
-    let deck = t.deck in
+    let deck =
+      List.init 10 (fun _ -> Racer.Red)
+      @ List.init 10 (fun _ -> Racer.Blue)
+      @ List.init 10 (fun _ -> Racer.Green)
+      @ List.init 10 (fun _ -> Racer.Yellow)
+    in
     let shuffled_deck = shuffle deck in
     let groups = distribute shuffled_deck 4 in
     let players_with_cards =
@@ -93,17 +92,10 @@ module State = struct
       asks = t.asks;
       race_positions = t.race_positions;
       is_game_over = false;
-      deck = [];
     }
 
   let create ~players ~bids ~asks ~race_positions ~is_game_over =
-    let deck =
-      List.init 10 (fun _ -> Racer.Red)
-      @ List.init 10 (fun _ -> Racer.Blue)
-      @ List.init 10 (fun _ -> Racer.Green)
-      @ List.init 10 (fun _ -> Racer.Yellow)
-    in
-    let state = { players; bids; asks; race_positions; is_game_over; deck } in
+    let state = { players; bids; asks; race_positions; is_game_over } in
     add_hands_to_players state
 
   let update_positions t =
@@ -121,7 +113,6 @@ module State = struct
       asks = t.asks;
       race_positions;
       is_game_over = t.is_game_over;
-      deck = t.deck;
     }
 
   let updated_velocities t =
@@ -143,6 +134,5 @@ module State = struct
       asks = t.asks;
       race_positions;
       is_game_over = t.is_game_over;
-      deck = t.deck;
     }
 end

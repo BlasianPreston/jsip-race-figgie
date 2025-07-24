@@ -27,12 +27,6 @@ end
 type position = int
 type velocity = int
 
-type holding =
-  { racer : Racer.t
-  ; quantity : int
-  }
-[@@deriving compare, hash, sexp_of]
-
 module Player = struct
   type t =
     { id : string
@@ -116,6 +110,9 @@ module State = struct
     in
     let shuffled_deck = shuffle deck in
     let groups = distribute shuffled_deck 4 in
+    print_int (List.length groups);
+    print_string "\n";
+    print_int (List.length players);
     let players_with_cards =
       List.map2
         (fun (player : Player.t) cards -> { player with holdings = cards })

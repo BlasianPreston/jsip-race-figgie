@@ -15,11 +15,6 @@ end
 type position = int (* lap position or index *)
 type velocity = int
 
-type holding =
-  { racer : Racer.t
-  ; quantity : int
-  }
-
 type order_type =
   | Bid
   | Ask

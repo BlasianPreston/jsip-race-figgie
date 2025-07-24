@@ -98,6 +98,9 @@ module State = struct
     let state = { players; bids; asks; race_positions; is_game_over } in
     add_hands_to_players state
 
+  let update ~players ~bids ~asks ~race_positions ~is_game_over =
+    { players; bids; asks; race_positions; is_game_over }
+
   let update_positions t =
     let positions = t.race_positions in
     let race_positions =

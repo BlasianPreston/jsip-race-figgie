@@ -27,7 +27,7 @@ end
 
 module State : sig
   type t = {
-    players : player list;
+    players : Player.t list;
     bids : Order.t list Racer.Map.t;
     asks : Order.t list Racer.Map.t;
     race_positions : (Racer.t * position * velocity) list;

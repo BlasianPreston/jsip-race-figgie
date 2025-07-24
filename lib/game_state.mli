@@ -6,7 +6,6 @@ module Racer : sig
     | Green
   [@@deriving equal, compare, hash, sexp_of]
 
-
   (** A map keyed by [Racer.t] values. *)
   module Map : Map.S with type key = t
 
@@ -46,29 +45,29 @@ module Player : sig
 end
 
 module State : sig
-  type t = {
-    players : Player.t list;
-    bids : Order.t list Racer.Map.t;
-    asks : Order.t list Racer.Map.t;
-    race_positions : (Racer.t * position * velocity) list;
-    winner : Racer.t option;
-  }
+  type t =
+    { players : Player.t list
+    ; bids : Order.t list Racer.Map.t
+    ; asks : Order.t list Racer.Map.t
+    ; race_positions : (Racer.t * position * velocity) list
+    ; winner : Racer.t option
+    }
 
-  val create :
-    players:Player.t list ->
-    bids:Order.t list Racer.Map.t ->
-    asks:Order.t list Racer.Map.t ->
-    race_positions:(Racer.t * velocity * velocity) list ->
-    winner:Racer.t option ->
-    t
+  val create
+    :  players:Player.t list
+    -> bids:Order.t list Racer.Map.t
+    -> asks:Order.t list Racer.Map.t
+    -> race_positions:(Racer.t * velocity * velocity) list
+    -> winner:Racer.t option
+    -> t
 
-  val update :
-    players:Player.t list ->
-    bids:Order.t list Racer.Map.t ->
-    asks:Order.t list Racer.Map.t ->
-    race_positions:(Racer.t * velocity * velocity) list ->
-    winner:Racer.t option ->
-    t
+  val update
+    :  players:Player.t list
+    -> bids:Order.t list Racer.Map.t
+    -> asks:Order.t list Racer.Map.t
+    -> race_positions:(Racer.t * velocity * velocity) list
+    -> winner:Racer.t option
+    -> t
 
   val update_positions : t -> t
   val update_velocities : t -> t

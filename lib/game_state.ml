@@ -55,7 +55,7 @@ module Order = struct
     ; order_type : order_type
     }
 
-  let create ~player_id ~racer ~price ~order_type =
+  let create ~player_id ~racer ~(price : int option) ~order_type =
     { player_id; racer; price; order_type }
   ;;
 
@@ -78,16 +78,7 @@ module State = struct
     ; winner : Racer.t option
     }
 
-  let empty =
-    { players = []
-    ; bids = Racer.Map.empty
-    ; asks = Racer.Map.empty
-    ; race_positions = []
-    ; winner = None
-    }
-  ;;
-
-  let empty =
+  let empty () =
     { players = []
     ; bids = Racer.Map.empty
     ; asks = Racer.Map.empty

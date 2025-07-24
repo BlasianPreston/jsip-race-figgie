@@ -1,2 +1,1 @@
-let run_graphics () = 
-  
+let run_graphics () = ()

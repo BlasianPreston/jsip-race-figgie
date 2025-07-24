@@ -31,7 +31,23 @@ module Order : sig
     ; price : int option
     ; order_type : order_type
     }
+
+  val create
+    :  player_id:string
+    -> racer:Racer.t
+    -> price:int option
+    -> order_type:order_type
+    -> t
+
+  val is_no_order : t -> bool
 end
+
+type trade =
+  { buyer : string
+  ; seller : string
+  ; racer : Racer.t
+  ; price : int
+  }
 
 module Player : sig
   type t =
@@ -72,4 +88,5 @@ module State : sig
   val update_positions : t -> t
   val update_velocities : t -> t
   val set_winner : t -> Racer.t option -> t
+  val empty : unit -> t
 end

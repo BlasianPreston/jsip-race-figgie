@@ -99,7 +99,7 @@ let update_state_on_trade
     ~bids:updated_bids
     ~asks:updated_asks
     ~race_positions:state.race_positions
-    ~is_game_over:state.is_game_over
+    ~winner:state.winner
 ;;
 
 let check_for_trades_given_racer
